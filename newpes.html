@@ -100,7 +100,7 @@
     <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
       <span class="flex items-center gap-2">
         <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i>
-        <strong>訪客唯讀預覽模式：</strong>此模式可點選帶入產生 PES 與複製病歷，教案庫與片語管理已安全鎖定。
+        <strong>訪客唯讀預覽模式：</strong>此模式可點選帶入產生 PES 與複製病歷，PES 診斷庫、教案庫與片語管理已安全鎖定。
       </span>
       <button type="button" onclick="promptUnlockAdmin()" class="font-bold underline hover:text-amber-950 ml-4">
         輸入密碼解鎖編輯
@@ -259,12 +259,19 @@
             </div>
           </div>
 
-          <!-- 分類篩選標籤 -->
-          <div class="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200 text-xs">
-            <button type="button" onclick="setDomainFilter('ALL')" id="filterDomainALL" class="px-2.5 py-1 rounded-md font-bold text-brand-800 bg-white shadow-xs">全部</button>
-            <button type="button" onclick="setDomainFilter('NB')" id="filterDomainNB" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900">NB 行為環境</button>
-            <button type="button" onclick="setDomainFilter('NI')" id="filterDomainNI" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900">NI 攝入領域</button>
-            <button type="button" onclick="setDomainFilter('NC')" id="filterDomainNC" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900">NC 臨床領域</button>
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- 新增：PES 診斷庫修改與存檔按鈕 -->
+            <button type="button" onclick="openPESManagerModal(currentP ? currentP.id : null)" class="admin-only inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-brand-800 bg-brand-50 hover:bg-brand-100 border border-brand-300 rounded-lg transition-all shadow-2xs active:scale-95">
+              ✏️ 修改/新增 PES 庫
+            </button>
+
+            <!-- 分類篩選標籤 -->
+            <div class="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200 text-xs">
+              <button type="button" onclick="setDomainFilter('ALL')" id="filterDomainALL" class="px-2.5 py-1 rounded-md font-bold text-brand-800 bg-white shadow-xs">全部</button>
+              <button type="button" onclick="setDomainFilter('NB')" id="filterDomainNB" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900">NB 行為環境</button>
+              <button type="button" onclick="setDomainFilter('NI')" id="filterDomainNI" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900">NI 攝入領域</button>
+              <button type="button" onclick="setDomainFilter('NC')" id="filterDomainNC" class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900">NC 臨床領域</button>
+            </div>
           </div>
         </div>
 
@@ -284,15 +291,20 @@
 
       <!-- 2-E. 病因 (Etiology, E) 多選與自訂 -->
       <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+        <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 mb-3 gap-2">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded-md bg-amber-600 text-white text-xs font-bold flex items-center justify-center">E</span>
             <div>
               <h2 class="text-sm font-bold text-slate-800">病因 / 機轉 (Etiology, E)</h2>
-              <p class="text-[11px] text-slate-400">點選多選標籤帶入，亦可新增自訂病因</p>
+              <p class="text-[11px] text-slate-400">點選多選標籤帶入，亦可新增自訂病因或修改預設題庫</p>
             </div>
           </div>
-          <span class="text-xs px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-medium">Related to</span>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openPESManagerModal(currentP ? currentP.id : null, 'E')" class="admin-only px-2 py-0.5 text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-md transition-colors">
+              ✏️ 編輯此題 E
+            </button>
+            <span class="text-xs px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-medium">Related to</span>
+          </div>
         </div>
 
         <div id="eChipsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[44px] items-center"></div>
@@ -308,15 +320,20 @@
 
       <!-- 2-S. 徵候與症狀 (Signs & Symptoms, S) 多選與自訂 -->
       <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+        <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 mb-3 gap-2">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded-md bg-blue-600 text-white text-xs font-bold flex items-center justify-center">S</span>
             <div>
               <h2 class="text-sm font-bold text-slate-800">徵候與症狀 (Signs & Symptoms, S)</h2>
-              <p class="text-[11px] text-slate-400">點選多選標籤帶入，亦可新增自訂徵候數據</p>
+              <p class="text-[11px] text-slate-400">點選多選標籤帶入，亦可新增自訂徵候數據或修改預設題庫</p>
             </div>
           </div>
-          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-medium">As evidenced by</span>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openPESManagerModal(currentP ? currentP.id : null, 'S')" class="admin-only px-2 py-0.5 text-[11px] font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-md transition-colors">
+              ✏️ 編輯此題 S
+            </button>
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-medium">As evidenced by</span>
+          </div>
         </div>
 
         <div id="sChipsContainer" class="flex flex-wrap gap-2 mb-3 min-h-[44px] items-center"></div>
@@ -490,6 +507,133 @@
     </div>
   </main>
 
+  <!-- 彈跳視窗 0 (新增)：PES 診斷庫完整修改、新增與永久存檔管理視窗 -->
+  <div id="pesManagerModalBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden" onclick="closePESManagerModal()"></div>
+  <div id="pesManagerModal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-white rounded-2xl shadow-2xl z-50 p-5 sm:p-6 hidden max-h-[90vh] flex flex-col">
+    <!-- 頂部標題與備份匯出/匯入 -->
+    <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-200 gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-brand-100 text-brand-800 flex items-center justify-center font-bold">
+          <i data-lucide="database" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-sm sm:text-base font-bold text-slate-900">PES 營養診斷庫管理 (新增 / 修改 / 永久存檔)</h3>
+          <p class="text-xs text-slate-500">可自由新增診斷問題 (P)、編修預設 E / S / 營養計畫，儲存後永久保存於本機</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="exportFullBackup()" class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg flex items-center gap-1 transition-colors" title="匯出所有自訂 PES 庫與片語庫">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          匯出備份
+        </button>
+        <label class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg flex items-center gap-1 cursor-pointer transition-colors" title="匯入先前備份的 JSON 檔">
+          <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+          匯入備份
+          <input type="file" id="importBackupInput" accept=".json" class="hidden" onchange="importFullBackup(event)">
+        </label>
+        <button type="button" onclick="closePESManagerModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg ml-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 雙欄主編輯內容 -->
+    <div class="py-4 flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12 gap-4 min-h-[380px]">
+      <!-- 左側 4 欄：所有 PES 診斷列表 + 新增 P 按鈕 -->
+      <div class="md:col-span-4 flex flex-col border border-slate-200 rounded-xl bg-slate-50/70 overflow-hidden">
+        <div class="p-2.5 border-b border-slate-200 bg-white flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-700">診斷列表 (<span id="modalPESCount">0</span>)</span>
+          <button type="button" onclick="createNewPESInModal()" class="px-2.5 py-1 text-xs font-bold text-white bg-brand-700 hover:bg-brand-800 rounded-lg flex items-center gap-1 shadow-2xs transition-colors">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            新增 PES 問題
+          </button>
+        </div>
+        <div id="modalPESListContainer" class="flex-1 overflow-y-auto p-2 space-y-1.5 custom-scroll">
+          <!-- 動態產生診斷列表 -->
+        </div>
+      </div>
+
+      <!-- 右側 8 欄：單筆 PES 詳細內容編修區 -->
+      <div id="modalPESDetailEditor" class="md:col-span-8 flex flex-col overflow-y-auto pr-1 space-y-4 custom-scroll">
+        <!-- 基礎欄位：領域、代碼、名稱 -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-brand-900">1. 基本資訊 (Problem, P)</span>
+            <button type="button" id="deletePESItemBtn" onclick="deleteSelectedPESInModal()" class="px-2 py-0.5 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-md flex items-center gap-1">
+              <i data-lucide="trash-2" class="w-3 h-3"></i> 刪除此筆 PES
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">NCP 領域分類</label>
+              <select id="editPESDomain" onchange="syncCurrentModalPESField('domain', this.value)" class="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                <option value="NB">NB 行為-環境領域 (置頂)</option>
+                <option value="NI">NI 攝入領域</option>
+                <option value="NC">NC 臨床領域</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">診斷代碼 (Code)</label>
+              <input type="text" id="editPESCode" placeholder="例: NB-1.8" oninput="syncCurrentModalPESField('code', this.value)" class="w-full text-xs font-mono px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            </div>
+            <div class="sm:col-span-3">
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">營養診斷問題名稱 (P)</label>
+              <input type="text" id="editPESName" placeholder="輸入診斷名稱..." oninput="syncCurrentModalPESField('name', this.value)" class="w-full text-xs font-bold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <!-- E 病因列表編輯 -->
+        <div id="modalSectionE" class="p-3 bg-amber-50/40 rounded-xl border border-amber-200/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-900">2. 預設病因選項 (Etiology, E)</span>
+            <button type="button" onclick="addPESSubItem('defaultE')" class="px-2 py-1 text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg flex items-center gap-1">
+              <i data-lucide="plus" class="w-3 h-3"></i> 新增 E 選項
+            </button>
+          </div>
+          <div id="modalPES_E_List" class="space-y-1.5"></div>
+        </div>
+
+        <!-- S 徵候列表編輯 -->
+        <div id="modalSectionS" class="p-3 bg-blue-50/40 rounded-xl border border-blue-200/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-blue-900">3. 預設徵候與症狀選項 (Signs & Symptoms, S)</span>
+            <button type="button" onclick="addPESSubItem('defaultS')" class="px-2 py-1 text-xs font-semibold text-blue-900 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center gap-1">
+              <i data-lucide="plus" class="w-3 h-3"></i> 新增 S 選項
+            </button>
+          </div>
+          <div id="modalPES_S_List" class="space-y-1.5"></div>
+        </div>
+
+        <!-- Plans 營養計畫列表編輯 -->
+        <div id="modalSectionPlans" class="p-3 bg-emerald-50/40 rounded-xl border border-emerald-200/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-900">4. 對應推薦營養計畫 (Plans)</span>
+            <button type="button" onclick="addPESSubItem('defaultPlans')" class="px-2 py-1 text-xs font-semibold text-emerald-900 bg-emerald-100 hover:bg-emerald-200 rounded-lg flex items-center gap-1">
+              <i data-lucide="plus" class="w-3 h-3"></i> 新增計畫選項
+            </button>
+          </div>
+          <div id="modalPES_Plans_List" class="space-y-1.5"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部儲存與還原按鈕 -->
+    <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between bg-slate-50 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 p-4 rounded-b-2xl gap-2">
+      <button type="button" onclick="restoreDefaultPESDatabase()" class="text-xs text-slate-500 hover:text-rose-600 underline">
+        還原全部 PES 診斷庫為系統初始預設
+      </button>
+      <div class="flex gap-2">
+        <button type="button" onclick="closePESManagerModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-200 rounded-xl">取消</button>
+        <button type="button" onclick="savePESDatabaseChanges()" class="px-5 py-2 text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white rounded-xl shadow-sm flex items-center gap-1.5">
+          <i data-lucide="save" class="w-4 h-4"></i>
+          💾 儲存並永久更新 PES 庫
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 彈跳視窗 1：編輯常用片語庫 -->
   <div id="phraseManagerModalBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden" onclick="closePhraseManagerModal()"></div>
   <div id="phraseManagerModal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-white rounded-2xl shadow-2xl z-50 p-6 hidden max-h-[88vh] flex flex-col">
@@ -584,7 +728,7 @@
         </div>
         <div>
           <h3 class="text-sm font-bold text-slate-900">權限控制與唯讀分享</h3>
-          <p class="text-xs text-slate-500">保護教案庫與片語庫，避免他人擅自修改破壞</p>
+          <p class="text-xs text-slate-500">保護 PES 庫、教案庫與片語庫，避免他人擅自修改破壞</p>
         </div>
       </div>
       <button type="button" onclick="closePermissionModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
@@ -610,7 +754,7 @@
           <i data-lucide="share-2" class="w-3.5 h-3.5 text-brand-600"></i>
           分享給他人之「唯讀連結」
         </div>
-        <p class="text-[11px] text-slate-500">他人開啟將強制鎖定為唯讀模式，僅可點選帶入產生 PES 與複製病歷，無權限修改教案庫。</p>
+        <p class="text-[11px] text-slate-500">他人開啟將強制鎖定為唯讀模式，僅可點選帶入產生 PES 與複製病歷，無權限修改題庫。</p>
         <div class="flex gap-2">
           <input type="text" id="readonlyShareUrl" readonly class="flex-1 text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-600 select-all font-mono">
           <button type="button" onclick="copyReadonlyShareLink()" class="px-3 py-1.5 text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white rounded-lg flex items-center gap-1">
@@ -647,7 +791,7 @@
   <!-- 核心醫學邏輯與互動腳本 -->
   <script>
     /**
-     * 臨床標準營養診斷 (PES) 資料庫
+     * 臨床標準營養診斷 (PES) 預設資料庫
      * 嚴格排序：NB (行為-環境領域) 置頂第一優先，其次為 NI (攝入領域)，最後為 NC (臨床領域)
      */
     const BASE_PES_DATABASE = [
@@ -1104,26 +1248,48 @@
       "InBody檢測：體脂超標、骨骼肌肉量流失"
     ];
 
-    // 本地持久化載入
+    // 本地持久化載入 (支援完整 PES 庫修改/新增/刪除，並向下相容舊版計畫存檔)
     let PES_DATABASE = loadCustomizedPES();
     let CCO_PHRASES = loadCustomizedPhrases();
 
     function loadCustomizedPES() {
       try {
-        const stored = localStorage.getItem('PES_CUSTOM_PLANS_V3');
-        if (stored) {
-          const parsed = JSON.parse(stored);
+        const fullStored = localStorage.getItem('PES_FULL_CUSTOM_DB_V4');
+        if (fullStored) {
+          const parsed = JSON.parse(fullStored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return sortPESByDomain(parsed);
+          }
+        }
+        // 向下相容舊版僅儲存計畫的資料
+        const legacyPlans = localStorage.getItem('PES_CUSTOM_PLANS_V3');
+        if (legacyPlans) {
+          const parsedPlans = JSON.parse(legacyPlans);
           return BASE_PES_DATABASE.map(item => {
-            if (parsed[item.id]) {
-              return { ...item, defaultPlans: parsed[item.id] };
+            if (parsedPlans[item.id]) {
+              return { ...item, defaultPlans: parsedPlans[item.id] };
             }
             return item;
           });
         }
       } catch (e) {
-        console.error('Failed to load plans', e);
+        console.error('Failed to load PES database', e);
       }
       return JSON.parse(JSON.stringify(BASE_PES_DATABASE));
+    }
+
+    function sortPESByDomain(list) {
+      const order = { 'NB': 1, 'NI': 2, 'NC': 3 };
+      return [...list].sort((a, b) => (order[a.domain] || 9) - (order[b.domain] || 9));
+    }
+
+    function persistPESDatabase() {
+      PES_DATABASE = sortPESByDomain(PES_DATABASE);
+      try {
+        localStorage.setItem('PES_FULL_CUSTOM_DB_V4', JSON.stringify(PES_DATABASE));
+      } catch (e) {
+        console.error('Failed to save PES database', e);
+      }
     }
 
     function loadCustomizedPhrases() {
@@ -1150,7 +1316,7 @@
 
     let currentDomain = 'ALL';
     let currentP = PES_DATABASE[0];
-    let currentP2 = PES_DATABASE[2];
+    let currentP2 = PES_DATABASE[2] || PES_DATABASE[0];
     let isPES2Enabled = true;
 
     let selectedEs = new Set();
@@ -1172,6 +1338,8 @@
 
     let tempModalPlans = [];
     let tempModalPhrases = [];
+    let tempModalPESList = [];
+    let modalSelectedPESIndex = 0;
 
     // DOM 元素參考
     const pCardsContainer = document.getElementById('pCardsContainer');
@@ -1209,7 +1377,289 @@
     };
 
     /* ==========================================================================
-       常用片語渲染與去重累加邏輯 (User Specified Implementation)
+       PES 診斷庫完整修改、新增與永久存檔管理視窗
+       ========================================================================== */
+    function openPESManagerModal(targetId = null, focusSection = null) {
+      if (!isOwnerMode) {
+        showToast('訪客唯讀模式無法編輯 PES 診斷庫');
+        return;
+      }
+
+      tempModalPESList = JSON.parse(JSON.stringify(PES_DATABASE));
+      modalSelectedPESIndex = 0;
+      if (targetId) {
+        const idx = tempModalPESList.findIndex(item => item.id === targetId);
+        if (idx !== -1) modalSelectedPESIndex = idx;
+      }
+
+      renderModalPESList();
+      renderModalPESDetail();
+
+      document.getElementById('pesManagerModal').classList.remove('hidden');
+      document.getElementById('pesManagerModalBackdrop').classList.remove('hidden');
+      lucide.createIcons();
+
+      if (focusSection) {
+        setTimeout(() => {
+          const secEl = document.getElementById('modalSection' + focusSection);
+          if (secEl) secEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 60);
+      }
+    }
+
+    function closePESManagerModal() {
+      document.getElementById('pesManagerModal').classList.add('hidden');
+      document.getElementById('pesManagerModalBackdrop').classList.add('hidden');
+    }
+
+    function renderModalPESList() {
+      const container = document.getElementById('modalPESListContainer');
+      const countSpan = document.getElementById('modalPESCount');
+      if (countSpan) countSpan.textContent = tempModalPESList.length;
+      container.innerHTML = '';
+
+      tempModalPESList.forEach((item, idx) => {
+        const isSelected = idx === modalSelectedPESIndex;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between gap-2 ${
+          isSelected
+            ? 'bg-brand-700 text-white border-brand-700 shadow-xs'
+            : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+        }`;
+        btn.onclick = () => {
+          modalSelectedPESIndex = idx;
+          renderModalPESList();
+          renderModalPESDetail();
+        };
+
+        btn.innerHTML = `
+          <div class="truncate">
+            <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded mr-1 ${
+              isSelected ? 'bg-brand-900 text-teal-200' : 'bg-slate-100 text-slate-600'
+            }">${escapeHtml(item.code || item.domain)}</span>
+            <span class="text-xs font-bold">${escapeHtml(item.name || '未命名診斷')}</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 shrink-0 opacity-70"></i>
+        `;
+        container.appendChild(btn);
+      });
+      lucide.createIcons();
+    }
+
+    function renderModalPESDetail() {
+      const item = tempModalPESList[modalSelectedPESIndex];
+      if (!item) return;
+
+      document.getElementById('editPESDomain').value = item.domain || 'NB';
+      document.getElementById('editPESCode').value = item.code || '';
+      document.getElementById('editPESName').value = item.name || '';
+
+      const delBtn = document.getElementById('deletePESItemBtn');
+      if (delBtn) {
+        delBtn.style.display = tempModalPESList.length > 1 ? 'inline-flex' : 'none';
+      }
+
+      renderPESSubList('defaultE', 'modalPES_E_List', '輸入病因描述...');
+      renderPESSubList('defaultS', 'modalPES_S_List', '輸入徵候與症狀描述...');
+      renderPESSubList('defaultPlans', 'modalPES_Plans_List', '輸入營養計畫處方...');
+      lucide.createIcons();
+    }
+
+    function renderPESSubList(fieldKey, containerId, placeholderText) {
+      const item = tempModalPESList[modalSelectedPESIndex];
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      if (!Array.isArray(item[fieldKey])) item[fieldKey] = [];
+      const arr = item[fieldKey];
+
+      if (arr.length === 0) {
+        container.innerHTML = `<div class="text-[11px] text-slate-400 py-2 text-center">尚無項目，點擊右上角新增</div>`;
+        return;
+      }
+
+      arr.forEach((val, subIdx) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-1.5';
+        row.innerHTML = `
+          <span class="text-[11px] font-mono text-slate-400 w-4 text-center">${subIdx + 1}</span>
+          <input type="text" value="${escapeHtml(val)}" placeholder="${placeholderText}"
+                 class="sub-input-${fieldKey} flex-1 text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                 oninput="updatePESSubItem('${fieldKey}', ${subIdx}, this.value)">
+          <button type="button" onclick="removePESSubItem('${fieldKey}', ${subIdx})" class="p-1 text-slate-400 hover:text-rose-600 rounded">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function syncCurrentModalPESField(key, val) {
+      const item = tempModalPESList[modalSelectedPESIndex];
+      if (!item) return;
+      item[key] = val;
+      renderModalPESList();
+    }
+
+    function updatePESSubItem(fieldKey, subIdx, val) {
+      const item = tempModalPESList[modalSelectedPESIndex];
+      if (item && Array.isArray(item[fieldKey])) {
+        item[fieldKey][subIdx] = val;
+      }
+    }
+
+    function addPESSubItem(fieldKey) {
+      const item = tempModalPESList[modalSelectedPESIndex];
+      if (!item) return;
+      if (!Array.isArray(item[fieldKey])) item[fieldKey] = [];
+      item[fieldKey].push('');
+      renderModalPESDetail();
+      const inputs = document.querySelectorAll(`.sub-input-${fieldKey}`);
+      if (inputs.length > 0) inputs[inputs.length - 1].focus();
+    }
+
+    function removePESSubItem(fieldKey, subIdx) {
+      const item = tempModalPESList[modalSelectedPESIndex];
+      if (item && Array.isArray(item[fieldKey])) {
+        item[fieldKey].splice(subIdx, 1);
+        renderModalPESDetail();
+      }
+    }
+
+    function createNewPESInModal() {
+      const newId = 'custom-pes-' + Date.now();
+      const newItem = {
+        id: newId,
+        domain: 'NB',
+        code: 'NB-新',
+        name: '自訂營養診斷問題',
+        defaultE: ['自訂病因 1'],
+        defaultS: ['自訂徵候/症狀 1'],
+        defaultPlans: [
+          '建議增加水量每天3000C.C以上',
+          '給周計畫表紀錄，下次帶回門診(助了解體重變化)'
+        ]
+      };
+      tempModalPESList.unshift(newItem);
+      modalSelectedPESIndex = 0;
+      renderModalPESList();
+      renderModalPESDetail();
+      const nameInput = document.getElementById('editPESName');
+      if (nameInput) {
+        nameInput.focus();
+        nameInput.select();
+      }
+    }
+
+    function deleteSelectedPESInModal() {
+      if (tempModalPESList.length <= 1) {
+        showToast('至少需保留一筆營養診斷項目');
+        return;
+      }
+      const target = tempModalPESList[modalSelectedPESIndex];
+      if (!window.confirm(`確定要刪除「${target.name}」嗎？`)) return;
+      tempModalPESList.splice(modalSelectedPESIndex, 1);
+      modalSelectedPESIndex = Math.max(0, modalSelectedPESIndex - 1);
+      renderModalPESList();
+      renderModalPESDetail();
+    }
+
+    function savePESDatabaseChanges() {
+      const cleanedList = tempModalPESList.map(item => ({
+        id: item.id,
+        domain: item.domain || 'NB',
+        code: (item.code || '').trim() || 'CUSTOM',
+        name: (item.name || '').trim() || '未命名營養診斷',
+        defaultE: (item.defaultE || []).map(x => x.trim()).filter(Boolean),
+        defaultS: (item.defaultS || []).map(x => x.trim()).filter(Boolean),
+        defaultPlans: (item.defaultPlans || []).map(x => x.trim()).filter(Boolean)
+      }));
+
+      PES_DATABASE = sortPESByDomain(cleanedList);
+      persistPESDatabase();
+
+      // 重新同步目前選中的 P1 與 P2
+      initP2Selector();
+      const stillExistsP1 = PES_DATABASE.find(p => p.id === (currentP && currentP.id));
+      selectP(stillExistsP1 ? stillExistsP1.id : PES_DATABASE[0].id);
+
+      if (currentP2) {
+        const stillExistsP2 = PES_DATABASE.find(p => p.id === currentP2.id);
+        if (stillExistsP2) {
+          currentP2 = stillExistsP2;
+          document.getElementById('p2Selector').value = currentP2.id;
+        }
+      }
+
+      closePESManagerModal();
+      showToast('PES 診斷庫已儲存並永久更新！');
+    }
+
+    function restoreDefaultPESDatabase() {
+      if (!window.confirm('確定將全部 PES 診斷庫還原為系統初始預設嗎？自訂修改將會清除。')) return;
+      PES_DATABASE = JSON.parse(JSON.stringify(BASE_PES_DATABASE));
+      localStorage.removeItem('PES_FULL_CUSTOM_DB_V4');
+      localStorage.removeItem('PES_CUSTOM_PLANS_V3');
+      tempModalPESList = JSON.parse(JSON.stringify(PES_DATABASE));
+      modalSelectedPESIndex = 0;
+      renderModalPESList();
+      renderModalPESDetail();
+      initP2Selector();
+      selectP(PES_DATABASE[0].id);
+      showToast('已還原為系統初始 PES 診斷庫');
+    }
+
+    function exportFullBackup() {
+      const payload = {
+        version: '4.0',
+        exportedAt: new Date().toISOString(),
+        pesDatabase: PES_DATABASE,
+        ccoPhrases: CCO_PHRASES
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `體重管理門診_PES與片語備份_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('已匯出 JSON 備份檔案');
+    }
+
+    function importFullBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (Array.isArray(data.pesDatabase) && data.pesDatabase.length > 0) {
+            PES_DATABASE = sortPESByDomain(data.pesDatabase);
+            persistPESDatabase();
+            tempModalPESList = JSON.parse(JSON.stringify(PES_DATABASE));
+            modalSelectedPESIndex = 0;
+            renderModalPESList();
+            renderModalPESDetail();
+            initP2Selector();
+            selectP(PES_DATABASE[0].id);
+          }
+          if (Array.isArray(data.ccoPhrases)) {
+            CCO_PHRASES = data.ccoPhrases;
+            localStorage.setItem('PES_CUSTOM_PHRASES_V3', JSON.stringify(CCO_PHRASES));
+            renderCCOChips();
+          }
+          showToast('備份匯入成功並已永久存檔！');
+        } catch (err) {
+          showToast('匯入失敗：檔案格式不正確');
+        }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    /* ==========================================================================
+       常用片語渲染與去重累加邏輯
        ========================================================================== */
     function renderCCOChips() {
       ccoChipsContainer.innerHTML = '';
@@ -1411,7 +1861,6 @@
       let weightType = 'CBW';
       let note = 'BMI < 24 採現存體重 CBW';
 
-      // 過重或肥胖 (BMI >= 24) 自動採用 ABW
       if (bmi >= 24.0) {
         refWeight = ibw + 0.25 * (wKg - ibw);
         weightType = 'ABW';
@@ -1504,8 +1953,8 @@
         document.getElementById('pes2EditorFields').classList.remove('opacity-40', 'pointer-events-none');
         document.getElementById('p2Selector').value = bestMatch.id;
         editorP2.value = bestMatch.name;
-        editorE2.value = matchedReasonE || bestMatch.defaultE[0];
-        editorS2.value = matchedSymptomS || bestMatch.defaultS[0];
+        editorE2.value = matchedReasonE || bestMatch.defaultE[0] || '';
+        editorS2.value = matchedSymptomS || bestMatch.defaultS[0] || '';
 
         renderPlanChips();
         updateLivePreview();
@@ -1544,7 +1993,7 @@
       if (isPES2Enabled) {
         fields.classList.remove('opacity-40', 'pointer-events-none');
         if (!currentP2) {
-          currentP2 = PES_DATABASE[2];
+          currentP2 = PES_DATABASE[2] || PES_DATABASE[0];
           document.getElementById('p2Selector').value = currentP2.id;
           editorP2.value = currentP2.name;
           editorE2.value = currentP2.defaultE[0] || '';
@@ -1611,13 +2060,13 @@
           <div class="flex items-start justify-between">
             <span class="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border ${
               isSelected ? 'bg-brand-700 text-white border-brand-700' : badgeColor
-            }">${p.code}</span>
+            }">${escapeHtml(p.code)}</span>
             <span class="text-[10px] font-semibold text-slate-400">
               ${p.domain === 'NB' ? '行為環境' : p.domain === 'NI' ? '攝入領域' : '臨床領域'}
             </span>
           </div>
           <div class="mt-1 text-xs sm:text-sm font-bold text-slate-800 ${isSelected ? 'text-brand-950 font-extrabold' : ''}">
-            ${p.name}
+            ${escapeHtml(p.name)}
           </div>
         `;
         pCardsContainer.appendChild(card);
@@ -1636,8 +2085,8 @@
       customSList = [];
       customPlanList = [];
 
-      if (currentP.defaultE.length > 0) selectedEs.add(currentP.defaultE[0]);
-      if (currentP.defaultS.length > 0) selectedSs.add(currentP.defaultS[0]);
+      if (currentP.defaultE && currentP.defaultE.length > 0) selectedEs.add(currentP.defaultE[0]);
+      if (currentP.defaultS && currentP.defaultS.length > 0) selectedSs.add(currentP.defaultS[0]);
 
       if (currentP.defaultPlans && currentP.defaultPlans.length > 0) {
         const count = Math.min(3, currentP.defaultPlans.length);
@@ -1663,7 +2112,7 @@
       eChipsContainer.innerHTML = '';
       if (!currentP) return;
 
-      const allOptions = [...currentP.defaultE, ...customEList];
+      const allOptions = [...(currentP.defaultE || []), ...customEList];
       allOptions.forEach(eText => {
         const isChecked = selectedEs.has(eText);
         const chip = document.createElement('button');
@@ -1691,7 +2140,7 @@
       sChipsContainer.innerHTML = '';
       if (!currentP) return;
 
-      const allOptions = [...currentP.defaultS, ...customSList];
+      const allOptions = [...(currentP.defaultS || []), ...customSList];
       allOptions.forEach(sText => {
         const isChecked = selectedSs.has(sText);
         const chip = document.createElement('button');
@@ -1751,7 +2200,7 @@
       const input = document.getElementById('customEInput');
       const val = input.value.trim();
       if (!val) return;
-      if (!customEList.includes(val) && !currentP.defaultE.includes(val)) customEList.push(val);
+      if (!customEList.includes(val) && !(currentP.defaultE || []).includes(val)) customEList.push(val);
       selectedEs.add(val);
       input.value = '';
       renderEChips();
@@ -1771,7 +2220,7 @@
       const input = document.getElementById('customSInput');
       const val = input.value.trim();
       if (!val) return;
-      if (!customSList.includes(val) && !currentP.defaultS.includes(val)) customSList.push(val);
+      if (!customSList.includes(val) && !(currentP.defaultS || []).includes(val)) customSList.push(val);
       selectedSs.add(val);
       input.value = '';
       renderSChips();
@@ -1813,13 +2262,12 @@
 
       if (isPES2Enabled && currentP2 && !editorP2.value) {
         editorP2.value = currentP2.name;
-        editorE2.value = currentP2.defaultE[0] || '';
-        editorS2.value = currentP2.defaultS[0] || '';
+        editorE2.value = (currentP2.defaultE && currentP2.defaultE[0]) || '';
+        editorS2.value = (currentP2.defaultS && currentP2.defaultS[0]) || '';
       }
 
       const planLines = Array.from(selectedPlans).map(item => item.startsWith('- ') ? item : `- ${item}`);
 
-      // 第一列自動置入熱量與蛋白質建議
       if (currentNutrientPlanLine) {
         planLines.unshift(`- ${currentNutrientPlanLine}`);
       }
@@ -1837,10 +2285,9 @@
       const s1 = editorS.value.trim() || '口述知識不準確或不完整';
 
       const p2 = editorP2.value.trim() || (currentP2 ? currentP2.name : '');
-      const e2 = editorE2.value.trim() || (currentP2 ? currentP2.defaultE[0] : '');
-      const s2 = editorS2.value.trim() || (currentP2 ? currentP2.defaultS[0] : '');
+      const e2 = editorE2.value.trim() || (currentP2 && currentP2.defaultE ? currentP2.defaultE[0] : '');
+      const s2 = editorS2.value.trim() || (currentP2 && currentP2.defaultS ? currentP2.defaultS[0] : '');
 
-      // 1. 獨立方框一：僅倒出 1.體位評估 與 2.營養診斷 (無 AI 字樣)
       let clinicParts = [patientAssessment.statement];
       if (isPES2Enabled && p2) {
         clinicParts.push(`2.營養診斷:\n(1) P-${p1}\n    E-${e1}\n    S-${s1}\n(2) P-${p2}\n    E-${e2}\n    S-${s2}`);
@@ -1849,7 +2296,6 @@
       }
       previewClinicFormat.textContent = clinicParts.join('\n');
 
-      // 2. 獨立方框二：首列熱量蛋白質處方 + 下方接續營養計畫
       let rawPlan = editorPlan.value.trim();
       let formattedPlanBlock = '';
       if (!rawPlan) {
@@ -1889,7 +2335,7 @@
     }
 
     /* ==========================================================================
-       教案庫彈跳視窗管理
+       教案庫彈跳視窗管理 (同步至統一的 PES_FULL_CUSTOM_DB_V4 永久存檔)
        ========================================================================== */
     function openPlanManagerModal() {
       if (!isOwnerMode) return showToast('無編輯權限！唯讀訪客無法修改教案庫');
@@ -1948,14 +2394,7 @@
       if (!currentP) return;
       const cleaned = tempModalPlans.map(t => t.trim()).filter(Boolean);
       currentP.defaultPlans = cleaned;
-
-      try {
-        let stored = {};
-        const raw = localStorage.getItem('PES_CUSTOM_PLANS_V3');
-        if (raw) stored = JSON.parse(raw);
-        stored[currentP.id] = cleaned;
-        localStorage.setItem('PES_CUSTOM_PLANS_V3', JSON.stringify(stored));
-      } catch (err) {}
+      persistPESDatabase();
 
       selectedPlans.clear();
       const count = Math.min(3, cleaned.length);
@@ -1964,7 +2403,7 @@
       renderPlanChips();
       syncSelectionsToEditors();
       closePlanManagerModal();
-      showToast('教案庫已成功更新並儲存！');
+      showToast('教案庫已成功更新並永久儲存！');
     }
 
     function restoreDefaultPlansForCurrentP() {
@@ -1974,17 +2413,12 @@
       const base = BASE_PES_DATABASE.find(b => b.id === currentP.id);
       if (base) {
         currentP.defaultPlans = [...base.defaultPlans];
-        try {
-          let stored = {};
-          const raw = localStorage.getItem('PES_CUSTOM_PLANS_V3');
-          if (raw) stored = JSON.parse(raw);
-          delete stored[currentP.id];
-          localStorage.setItem('PES_CUSTOM_PLANS_V3', JSON.stringify(stored));
-        } catch (e) {}
-
+        persistPESDatabase();
         tempModalPlans = [...currentP.defaultPlans];
         renderModalPlanItems();
         showToast('已還原為初始教案');
+      } else {
+        showToast('此為自訂新增項目，無系統預設教案');
       }
     }
 
@@ -2057,7 +2491,7 @@
     function copyReadonlyShareLink() {
       const input = document.getElementById('readonlyShareUrl');
       if (!input) return;
-      executeCopy(input.value, '已複製唯讀分享連結！對方將無法修改教案庫');
+      executeCopy(input.value, '已複製唯讀分享連結！對方將無法修改題庫');
     }
 
     function updateMasterPassword() {
@@ -2081,7 +2515,7 @@
     }
 
     /* ==========================================================================
-       完整清空重填函式 (User Specified Implementation)
+       完整清空重填函式
        ========================================================================== */
     function resetAll() {
       if (!isOwnerMode) {
